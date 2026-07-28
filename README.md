@@ -41,9 +41,6 @@ Three OR terms, three inputs each. A CD4075 contains **three 3-input OR gates in
 
 That last point is what makes the design worth showing. `D` is not merely unused; it is tied to ground. Digits 8 and 9 have no electrical path to the display at all. And because `Q6` never survives long enough to be decoded, neither do 0 or 7. The rule "a dice shows 1 to 6" is enforced by the topology of the board, not by a condition that could be got wrong.
 
-> [!NOTE]
-> A microcontroller version of this project is roughly four lines of code. That version can also print `7` if the modulo is written wrong. This one cannot — and demonstrating that difference is the point of the exercise.
-
 ---
 
 ## How it works

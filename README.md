@@ -46,18 +46,6 @@ That last point is what makes the design worth showing. `D` is not merely unused
 
 ---
 
-## Design philosophy
-
-| Decision | Reasoning |
-|---|---|
-| **No microcontroller** | The course is Digital Electronics. Hiding the state machine inside firmware would hide the entire subject being assessed. |
-| **CD4017 + CD4075 + 74LS47** instead of CD4026 | The CD4026 integrates counter and segment driver, which is more compact but makes the 1–6 restriction awkward and invisible. Splitting the roles exposes the BCD bus, where the constraint can be made explicit and measurable. See [THEORY.md](docs/THEORY.md#why-not-the-cd4026). |
-| **`Q6 → MR` rather than gating the clock** | Asynchronous reset is instantaneous and needs no extra components. Clock gating would need a latch and would introduce a visible half-state. |
-| **Two independent oscillators** | With one shared clock the displays advance in lockstep and always show the same face — one die shown twice, not two dice. |
-| **`D` grounded, not left floating** | CMOS and TTL inputs must never float. A floating `D` would pick up noise and could momentarily decode as 8 or 9. |
-
----
-
 ## How it works
 
 <div align="center">
@@ -83,56 +71,7 @@ The signal path per channel:
 
 **Stage 4 — 74LS47.** BCD in, seven segment lines out. Its outputs are **active LOW**, which is why the display must be **common anode** — a LOW output sinks current through the segment. Fitting a common-cathode display here produces an inverted, meaningless pattern.
 
-**Stage 5 — Display.** Series resistors on every segment line. Not optional; see [ASSEMBLY.md](docs/ASSEMBLY.md#segment-current-limiting).
-
-A full walkthrough with truth tables and pin-level detail is in **[docs/THEORY.md](docs/THEORY.md)**.
-
----
-
-## Verification
-
-The logic claims above are not asserted, they are checked. `tools/logic_verify.py` exhaustively walks the counter, the OR network, and the decoder, and fails loudly if any layer is wrong.
-
-```bash
-python3 tools/logic_verify.py --table
-```
-
-```
-[counter (mod-6 feedback)]
-  counter cycle       : Q0 -> Q1 -> Q2 -> Q3 -> Q4 -> Q5 -> (repeat)
-  cycle length        : 6 states, as required for a d6
-  negative control    : Q5 -> MR gives 5 states (rejected)
-  negative control    : Q7 -> MR gives 7 states (rejected)
-
-[combinational mapping]
-  decoded digits      : [1, 2, 3, 4, 5, 6]
-  gate widths         : {'A': 3, 'B': 3, 'C': 3} -> fits one CD4075 exactly
-  forbidden digits    : 0, 7, 8, 9 all unreachable
-
-[74LS47 decoding]
-  segment patterns    : digits 1..6 verified against 74LS47 datasheet
-  output polarity     : active-LOW confirmed (common-anode display)
-  ambiguity check     : '1' (bc) distinct from '7' (abc)
-
-[end-to-end chain]
-
-  clk  4017    A B C D   BCD   digit   segments lit
-  ----------------------------------------------------
-    0  Q0      1 0 0 0   0001     1     bc
-    1  Q1      0 1 0 0   0010     2     abdeg
-    2  Q2      1 1 0 0   0011     3     abcdg
-    3  Q3      0 0 1 0   0100     4     bcfg
-    4  Q4      1 0 1 0   0101     5     acdfg
-    5  Q5      0 1 1 0   0110     6     cdefg
-
-       _     _           _
-  |    _|    _|   |_|   |_    |_
-  |   |_     _|     |    _|   |_|
-
-All checks passed. The three-OR-gate design is correct.
-```
-
-The negative controls matter as much as the positive ones. If `Q5` or `Q7` had also produced a clean six-state cycle, the test would prove nothing about the choice of `Q6`. It runs on every push via [GitHub Actions](.github/workflows/verify.yml).
+**Stage 5 — Display.** Series resistors on every segment line. Not optional.
 
 ---
 
@@ -153,14 +92,9 @@ Only the timing capacitor differs between channels:
 
 A 10× ratio, which is exactly the point: the two displays are never in phase, so stopping them yields two genuinely independent results rather than the same face twice.
 
-```bash
-python3 tools/timing_calculator.py            # both channels as built
-python3 tools/timing_calculator.py --sweep    # capacitor selection table
-python3 tools/timing_calculator.py --target-hz 30 --c 1u   # solve for R2
-```
 
 > [!TIP]
-> At 9.4 Hz the "fast" channel flickers rather than blurs — a player can still track individual digits and time the button press. Persistence of vision needs roughly **20 Hz or more** before the digit becomes genuinely unreadable. Dropping C to **1–2.2 µF** moves the fast channel to 42–94 Hz and makes the spin feel honest. This is the first change to make on a revision; the reasoning is worked through in [THEORY.md](docs/THEORY.md#choosing-the-spin-rate).
+> At 9.4 Hz the "fast" channel flickers rather than blurs — a player can still track individual digits and time the button press. Persistence of vision needs roughly **20 Hz or more** before the digit becomes genuinely unreadable. Dropping C to **1–2.2 µF** moves the fast channel to 42–94 Hz and makes the spin feel honest.
 
 ---
 
@@ -184,60 +118,6 @@ Quantities are for the complete two-display unit.
 | 12 | Push button | 3 | Spin / stop / reset |
 | 13 | 5 V regulated supply | 1 | See note below |
 | 14 | Jumper wire, breadboard or PCB | — | — |
-
-> [!WARNING]
-> The original proposal listed a **12 V** supply. The 74LS47 is a TTL part with an **absolute maximum of 7 V** — 12 V will destroy it. The CD4017 and CD4075 tolerate 3–15 V, but the moment a TTL part shares the rail, the whole board is a 5 V board. Full discussion and a corrected supply section in [BOM.md](docs/BOM.md#supply-voltage).
-
-Full sourcing notes, substitutions and tolerances: **[docs/BOM.md](docs/BOM.md)**
-
----
-
-## Repository layout
-
-```
-dadu-digital-7segment/
-├── README.md                      This file
-├── README.id.md                   Indonesian version
-├── LICENSE                        CC BY-NC-SA 4.0
-├── CONTRIBUTING.md
-├── docs/
-│   ├── THEORY.md                  Derivation, truth tables, design rationale
-│   ├── ASSEMBLY.md                Wiring order, pin maps, bring-up procedure
-│   ├── BOM.md                     Parts, substitutions, supply voltage
-│   ├── TROUBLESHOOTING.md         Symptom → cause → fix
-│   ├── Laporan-Akhir-...docx      Original academic report (Indonesian)
-│   ├── Proposal-Awal-...pdf       Initial proposal, CD4026 design
-│   ├── datasheets/                Datasheet links and local copies
-│   └── images/
-│       ├── figures/               Figures from the report
-│       └── build/                 Photographs of the assembled unit
-├── hardware/
-│   ├── schematic/                 Schematic export (PDF)
-│   ├── netlist/digital-dice.net   Pin-by-pin connection reference
-│   └── enclosure/                 3D enclosure design
-├── simulation/                    Proteus / Falstad / LTspice notes
-├── tools/
-│   ├── logic_verify.py            Formal verification of the logic
-│   └── timing_calculator.py       NE555 design aid
-└── .github/workflows/verify.yml   CI: runs the verification on every push
-```
-
----
-
-## Getting started
-
-**To understand the design** — read [THEORY.md](docs/THEORY.md), then run `python3 tools/logic_verify.py --table`. No hardware or dependencies needed; the tools are pure standard-library Python 3.9+.
-
-**To build it** — start with [BOM.md](docs/BOM.md), then follow [ASSEMBLY.md](docs/ASSEMBLY.md). Build and bring up **one channel completely** before starting the second. A working channel is the reference you will need when the second one misbehaves.
-
-**To simulate it first** — [simulation/README.md](simulation/README.md) covers Proteus, Falstad and Logisim, including which parts each tool substitutes and where the simulation diverges from the physical board.
-
-```bash
-git clone https://github.com/revaldinotr/dadu-digital-7segment.git
-cd dadu-digital-7segment
-python3 tools/logic_verify.py --table
-python3 tools/timing_calculator.py
-```
 
 ---
 
@@ -272,91 +152,9 @@ python3 tools/timing_calculator.py
 
 ---
 
-## Known limitations
-
-Stated plainly, because a project page that claims no weaknesses is not credible.
-
-| Limitation | Detail |
-|---|---|
-| **Not cryptographically random** | The result is a deterministic counter sampled at a human-chosen instant. Entropy comes from the player's reaction time relative to the clock phase — adequate for a board game, unsuitable for anything else. |
-| **Slow channel is gameable** | At 0.94 Hz a player can watch the sequence and press deliberately. This is a fairness flaw, not just an aesthetic one. See [THEORY.md](docs/THEORY.md#choosing-the-spin-rate). |
-| **Fast channel flickers rather than blurs** | 9.4 Hz sits below the persistence-of-vision threshold. Documented above with the fix. |
-| **Two oscillators can beat** | With commodity capacitors at ±20 % tolerance the two channels drift relative to each other, which is desirable here — but it also means the exact ratio is not reproducible unit to unit. |
-| **No debouncing** | The buttons are wired directly. A bouncy press can inject extra clock edges. A 100 nF cap across the switch, or a 74HC14 Schmitt inverter, would fix it. |
-| **Rebuilt from documentation** | The netlist reference was transcribed from a schematic export that does not annotate every resistor per channel. Values marked "verify" in [digital-dice.net](hardware/netlist/digital-dice.net) should be measured before being quoted. |
-
----
-
-## Documentation
-
-| Document | Contents |
-|---|---|
-| [docs/THEORY.md](docs/THEORY.md) | Full derivation of the OR mapping, mod-6 fold, truth tables, spin-rate analysis, why not the CD4026 |
-| [docs/ASSEMBLY.md](docs/ASSEMBLY.md) | Stage-by-stage build order, complete pin maps, bring-up and test procedure |
-| [docs/BOM.md](docs/BOM.md) | Parts list, substitutions, supply-voltage analysis, sourcing |
-| [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md) | Symptom → cause → fix, ordered by how often each occurs |
-| [hardware/netlist/digital-dice.net](hardware/netlist/digital-dice.net) | Pin-by-pin connection reference |
-| [simulation/README.md](simulation/README.md) | Simulating in Proteus, Falstad, Logisim |
-
----
-
 ## About
 
 Final project for **Digital Electronics**, semester 3, Electronics Engineering Study Program, Department of Electrical Engineering, **Politeknik Negeri Sriwijaya**, Palembang — 2024.
 
-Original title: *Perancangan dan Implementasi Sistem Dadu Digital Dua Display dengan Waktu Spin Berbeda* (Design and Implementation of a Dual-Display Digital Dice System with Differing Spin Times).
-
-Supervisor: **Ratna Atika, S.T., M.T.**
-
-The complete academic report is preserved in [`docs/`](docs/) in its original form. This repository restructures that work as an engineering artefact: the reasoning made explicit, the claims made verifiable, and the errors found during review documented rather than quietly corrected.
-
 ---
 
-## Authors
-
-**Team OhmFusion — Group 6**
-
-<table>
-  <thead>
-    <tr>
-      <th align="left">Author</th>
-      <th align="left">NIM</th>
-      <th align="left">Contribution</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td align="left"><a href="https://www.linkedin.com/in/revaldino"><b>Reval Dino Try Rahmady</b></a></td>
-      <td align="left">062330320631</td>
-      <td align="left">Team lead · schematic design · timing network</td>
-    </tr>
-    <tr>
-      <td align="left"><b>Alsya Amanda Putri</b></td>
-      <td align="left">062330320612</td>
-      <td align="left">Combinational logic · truth tables · report</td>
-    </tr>
-    <tr>
-      <td align="left"><b>M. Indra Cahaya</b></td>
-      <td align="left">062330320620</td>
-      <td align="left">Assembly · enclosure design · testing</td>
-    </tr>
-  </tbody>
-</table>
-
-> [!NOTE]
-> The contribution column reflects an inference from the report and should be corrected by the team before publishing.
-
----
-
-## License
-
-Released under [CC BY-NC-SA 4.0](LICENSE). You may share and adapt this work for non-commercial purposes with attribution, under the same licence. Academic work — please cite the authors if you build on it.
-
-<div align="center">
-<br>
-
-**[github.com/revaldinotr/dadu-digital-7segment](https://github.com/revaldinotr/dadu-digital-7segment)**
-
-<sub>Politeknik Negeri Sriwijaya · Digital Electronics · 2024</sub>
-
-</div>

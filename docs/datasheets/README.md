@@ -10,30 +10,6 @@ copies, since manufacturers revise them and a stale PDF is worse than none.
 | CD4075B | CMOS triple 3-input OR gate | [TI CD4075B](https://www.ti.com/lit/ds/symlink/cd4075b.pdf) |
 | SN74LS47 | BCD to seven-segment decoder/driver | [TI SN5447A](https://www.ti.com/lit/ds/symlink/sn5447a.pdf) |
 
-## The pages that matter
-
-Rather than reading four full datasheets, these are the specific sections
-this design depends on:
-
-**NE555** — the astable configuration and its frequency equation. Everything
-else (monostable, bistable, 50 % duty modifications) is out of scope here.
-
-**CD4017** — the pin assignment table. Its decoded outputs are not in pin
-order and this is where the most common build error comes from. Also the
-Master Reset description: it is **asynchronous and active HIGH**, which is
-what makes the `Q6 → MR` fold work.
-
-**CD4075** — the pin assignment for the three gates. The logic is trivial;
-only the pinout is worth looking up.
-
-**74LS47** — the function table, which gives the segment pattern for every
-BCD input, and the note that outputs are **active LOW with open collectors**.
-That single fact determines the display type and mandates the series
-resistors.
-
-Extracts from these appear as figures in the original report — see
-[`../images/figures/`](../images/figures/).
-
 ## Absolute maximum ratings
 
 Worth reading once, because it settles the supply-voltage question:
@@ -44,11 +20,3 @@ Worth reading once, because it settles the supply-voltage question:
 | CD4017 | 3 – 15 V | 18 V |
 | CD4075 | 3 – 15 V | 18 V |
 | **74LS47** | **4.75 – 5.25 V** | **7 V** |
-
-The board runs at 5 V. Discussion in [`../BOM.md`](../BOM.md#supply-voltage).
-
-## Local copies
-
-If you add PDFs to this directory, name them `<part>-<manufacturer>.pdf`
-(e.g. `cd4017b-ti.pdf`) and note the revision date, so it is obvious when a
-copy has gone stale.

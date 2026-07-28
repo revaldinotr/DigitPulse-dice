@@ -1,0 +1,45 @@
+Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)
+
+Copyright (c) 2024 Reval Dino Try Rahmady, Alsya Amanda Putri,
+                   M. Indra Cahaya  (Team OhmFusion, Group 6)
+                   Politeknik Negeri Sriwijaya
+
+You are free to:
+
+  Share  — copy and redistribute the material in any medium or format
+  Adapt  — remix, transform, and build upon the material
+
+Under the following terms:
+
+  Attribution   — You must give appropriate credit, provide a link to the
+                  licence, and indicate if changes were made.
+  NonCommercial — You may not use the material for commercial purposes.
+  ShareAlike    — If you remix, transform, or build upon the material, you
+                  must distribute your contributions under the same licence
+                  as the original.
+
+No additional restrictions — You may not apply legal terms or technological
+measures that legally restrict others from doing anything the licence permits.
+
+Full licence text:
+https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
+
+---
+
+ACADEMIC USE
+
+This repository documents a final project submitted for the Digital
+Electronics course at Politeknik Negeri Sriwijaya. If you use the circuit,
+the documentation, or the analysis in your own coursework or publication,
+please cite it:
+
+  Rahmady, R. D. T., Putri, A. A., & Cahaya, M. I. (2024).
+  Perancangan dan Implementasi Sistem Dadu Digital Dua Display dengan
+  Waktu Spin Berbeda. Politeknik Negeri Sriwijaya, Palembang.
+
+---
+
+THIRD-PARTY MATERIAL
+
+Datasheets referenced in docs/datasheets/ remain the property of their
+respective manufacturers and are linked, not relicensed.

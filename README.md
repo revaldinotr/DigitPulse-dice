@@ -95,27 +95,28 @@ A 10× ratio, which is exactly the point: the two displays are never in phase, s
 
 ---
 
-## Bill of materials
+# Datasheets
 
-Quantities are for the complete two-display unit.
+Manufacturer datasheets for every active component. Links rather than local
+copies, since manufacturers revise them and a stale PDF is worse than none.
 
-| # | Component | Qty | Role |
-|---|---|:---:|---|
-| 1 | NE555 timer | 2 | Clock source, one per channel |
-| 2 | CD4017 decade counter | 2 | Mod-6 sequencer |
-| 3 | CD4075 triple 3-input OR | 2 | One-hot → BCD mapping |
-| 4 | 74LS47 BCD → 7-segment | 2 | Display driver, active LOW |
-| 5 | 7-segment display, **common anode** | 2 | Output |
-| 6 | Resistor 5.1 kΩ | 4 | NE555 timing network |
-| 7 | Resistor 1 kΩ | 2 | CD4017 Master Reset pull-down |
-| 8 | Resistor 220 Ω | 14 | Segment current limiting |
-| 9 | Capacitor 10 µF | 1 | Timing, fast channel |
-| 10 | Capacitor 100 µF | 1 | Timing, slow channel |
-| 11 | Capacitor 100 nF | 4+ | Supply decoupling, one per IC |
-| 12 | Push button | 3 | Spin / stop / reset |
-| 13 | 5 V regulated supply | 1 | See note below |
-| 14 | Jumper wire, breadboard or PCB | — | — |
+| Part | Function | Datasheet |
+|---|---|---|
+| NE555 | Timer, astable clock source | [TI SNAS548](https://www.ti.com/lit/ds/symlink/ne555.pdf) |
+| CD4017B | CMOS decade counter, 10 decoded outputs | [TI CD4017B](https://www.ti.com/lit/ds/symlink/cd4017b.pdf) |
+| CD4075B | CMOS triple 3-input OR gate | [TI CD4075B](https://www.ti.com/lit/ds/symlink/cd4075b.pdf) |
+| SN74LS47 | BCD to seven-segment decoder/driver | [TI SN5447A](https://www.ti.com/lit/ds/symlink/sn5447a.pdf) |
 
+## Absolute maximum ratings
+
+Worth reading once, because it settles the supply-voltage question:
+
+| Part | Supply range | Absolute max |
+|---|---|---|
+| NE555 | 4.5 – 16 V | 18 V |
+| CD4017 | 3 – 15 V | 18 V |
+| CD4075 | 3 – 15 V | 18 V |
+| **74LS47** | **4.75 – 5.25 V** | **7 V** |
 ---
 
 ## Gallery

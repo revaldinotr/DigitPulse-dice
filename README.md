@@ -131,24 +131,7 @@ Quantities are for the complete two-display unit.
 <td width="33%"><img src="docs/images/figures/18-desain-3d.png" alt="3D enclosure design"></td>
 <td width="33%"><img src="docs/images/build/build-02.jpg" alt="Assembled unit"></td>
 </tr>
-<tr>
-<td align="center"><sub>Schematic</sub></td>
-<td align="center"><sub>Enclosure design</sub></td>
-<td align="center"><sub>Assembled</sub></td>
-</tr>
-<tr>
-<td><img src="docs/images/build/build-03.jpg" alt="Build detail"></td>
-<td><img src="docs/images/build/build-05.jpg" alt="Build detail"></td>
-<td><img src="docs/images/build/build-06.jpg" alt="Build detail"></td>
-</tr>
-<tr>
-<td align="center"><sub>Wiring</sub></td>
-<td align="center"><sub>Bench test</sub></td>
-<td align="center"><sub>Bench test</sub></td>
-</tr>
 </table>
-
-</div>
 
 ---
 

@@ -1,8 +1,6 @@
 <div align="center">
 
-<img src="docs/images/figures/00-logo-polsri.png" width="110" alt="Politeknik Negeri Sriwijaya">
-
-# Digital Dice — Dual Seven-Segment, Asynchronous Spin
+  # Digital-Dice|Dual-Seven-Segment|Asynchronous-Spin
 
 **Two independent d6 dice built entirely from discrete logic. No microcontroller, no firmware, no code in the signal path.**
 

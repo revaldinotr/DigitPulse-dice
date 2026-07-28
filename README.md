@@ -1,42 +1,11 @@
-<div align="center">
-
-  # Digital-Dice|Dual-Seven-Segment|Asynchronous-Spin
+# Digital-Dice-Dual-Seven-Segment-Asynchronous-Spin
 
 **Two independent d6 dice built entirely from discrete logic. No microcontroller, no firmware, no code in the signal path.**
 
-A CD4017 decade counter is folded into a mod-6 sequencer, and exactly three OR gates translate its one-hot output into the BCD that a 74LS47 expects — so the digits 0, 7, 8 and 9 are not filtered out in software, they are *structurally unreachable*.
+A CD4017 decade counter is folded into a mod-6 sequencer, and exactly three OR gates translate its one-hot output into the BCD that a 74LS47 expects, so the digits 0, 7, 8 and 9 are not filtered out in software, they are *structurally unreachable*.
 
-[![Logic Verified](https://img.shields.io/badge/logic-formally%20verified-2ea44f?style=flat-square)](#verification)
-[![Gate Count](https://img.shields.io/badge/OR%20gates-3%20per%20channel-blue?style=flat-square)](#the-core-idea)
-[![Microcontroller](https://img.shields.io/badge/microcontroller-none-lightgrey?style=flat-square)](#design-philosophy)
-[![Course](https://img.shields.io/badge/course-Digital%20Electronics-orange?style=flat-square)](#about)
-[![License](https://img.shields.io/badge/license-CC%20BY--NC--SA%204.0-informational?style=flat-square)](LICENSE)
-
-<img src="docs/images/build/build-01.jpg" width="440" alt="Assembled digital dice">
-
-*Politeknik Negeri Sriwijaya · Electrical Engineering · Semester 3 Project · 2024*
-
-**[Bahasa Indonesia →](README.id.md)**
 
 </div>
-
----
-
-## Table of Contents
-
-- [The core idea](#the-core-idea)
-- [Design philosophy](#design-philosophy)
-- [How it works](#how-it-works)
-- [Verification](#verification)
-- [Timing and the two spin rates](#timing-and-the-two-spin-rates)
-- [Bill of materials](#bill-of-materials)
-- [Repository layout](#repository-layout)
-- [Getting started](#getting-started)
-- [Gallery](#gallery)
-- [Known limitations](#known-limitations)
-- [Documentation](#documentation)
-- [About](#about)
-- [Authors](#authors)
 
 ---
 
